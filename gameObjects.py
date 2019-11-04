@@ -68,7 +68,7 @@ class Bullet(BreakingObject):
         self.shift[1]=shift[1]*2
         self.rect.x = rect.x
         self.rect.y = rect.y
-
+        self.health=2
         self.rect.x += shift[0] * 16+13
 
         self.rect.y += shift[1] * 16+13
@@ -159,7 +159,7 @@ for i in range(int(height/19)):
     for j in range(int(width/32)):
         if (i==0 or j==0 or i==20 or j==24 ):
             walls+=[Wall(j*32,i*19)]
-
+collides=[0,0]
 for i in range(int(height / 19)):
     for j in range(int(width / 32)):
         if (j%4==3 and j<13 and i>4):
@@ -196,11 +196,13 @@ while not gameover:
 
     hits = pygame.sprite.spritecollide(tank, walls+breakingWals, False)
     if hits:
-        tank.shift[0] *= -1
-        tank.shift[1] *= -1
-        tank.move()
-        tank.move()
-        tank.move()
+        if (tank.shift[0]!=0):
+            collides[0]=tank.shift[0]*-1
+        if (tank.shift[1]!=0):
+            collides[1]=tank.shift[1]*-1
+
+        tank.shift=collides
+
         tank.move()
         tank.shift[0] = 0
         tank.shift[1] = 0
@@ -208,11 +210,13 @@ while not gameover:
         hits = pygame.sprite.spritecollide(bullets[i], walls, False)
         hits1 = pygame.sprite.spritecollide(bullets[i], breakingWals, False)
         if hits or hits1:
-            bullets[i].dead=True
+            bullets[i].health-=1
+            bullets[i].death()
     for i in range(len(breakingWals)):
         hits1 = pygame.sprite.spritecollide(breakingWals[i], bullets, False)
         if (hits1):
-            breakingWals[i].dead=True
+            breakingWals[i].health-=1
+            breakingWals[i].death()
 
     tank.move()
     tank.draw(screen)
