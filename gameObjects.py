@@ -232,6 +232,7 @@ class Tank(BreakingObject):
 class Player(Tank):
     def __init__(self):
         super().__init__()
+        self.Image='tankUp.png'
     def CollideDo(self,ob,n):
         if (n==1):
             collides=self.shift
@@ -331,11 +332,11 @@ while(not over):
     text1=TextObject('You health:'+str(player1.health),20)
     text2=TextObject('You health:'+str(player2.health),20,0,60)
 
-    f=open('save.txt','r')
     tanks=[]
     walls=[]
     breakingWals=[]
     try:
+        f=open('save.txt','r')
         for i in f.readlines():
             i=i.replace('\n','')
             i=i.split('|')
@@ -370,6 +371,10 @@ while(not over):
             a.load([i[1], i[2]], [i[3], i[4]])
             bullets+=[a]
         player1.load(tanks[0][0],[tanks[0][1],tanks[0][2]],[tanks[0][3],tanks[0][4]],tanks[0][5])
+        player2.load(tanks[1][0],[tanks[1][1],tanks[1][2]],[tanks[1][3],tanks[1][4]],tanks[1][5])
+        player1.death()
+        player2.death()
+
     except:
 
         for i in range(int(height / 19)):
@@ -478,7 +483,6 @@ while(not over):
             player1.atack-=player1.atackspeed
             player2.move()
             player2.draw(screen)
-            print(player1)
             player2.atack-=player2.atackspeed
             pygame.display.flip()
             pygame.time.wait(5)
