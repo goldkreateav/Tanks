@@ -144,42 +144,73 @@ if (False and stats):
             pygame.time.wait(5)
             screen.fill((255, 255, 255))
 class Bullet(BreakingObject):
-    def __init__(self,image,shift,rect,health=1):
-        super().__init__(image)
-        self.shift[0]=shift[0]*2
-        self.shift[1]=shift[1]*2
-        self.rect.x = rect.x
-        self.rect.y = rect.y
-        self.health=health
-        s=[0,0]
-        if (shift[0] < 0):
-            s[0] = -1
-        else:
-            s[0] = 1
-        if (shift[1] < 0):
-            s[1] = -1
-        else:
-            s[1] = 1
+    def __str__(self):
+        return "Bullet|"+str(self.rect.x)+'|'+str(self.rect.y)+'|'+str(self.shift[0])+'|'+str(self.shift[1])
 
-        self.rect.x += shift[0] * 15 + s[0]*15
+    def __init__(self,image,shift,rect=-1,health=1):
+        if (len(shift)!=1 and rect != -1):
+            print(rect)
+            super().__init__(image)
+            self.shift[0]=shift[0]*2
+            self.shift[1]=shift[1]*2
+            self.rect.x = rect.x
+            self.rect.y = rect.y
+            self.health=health
+            s=[0,0]
+            if (shift[0] < 0):
+                s[0] = -1
+            else:
+                s[0] = 1
+            if (shift[1] < 0):
+                s[1] = -1
+            else:
+                s[1] = 1
 
-        self.rect.y += shift[1] * 15 + s[1]*15
-    def check_edges(self):
+            self.rect.x += shift[0] * 15 + s[0]*15
+
+            self.rect.y += shift[1] * 15 + s[1]*15
+        else:
+            super().__init__('bullet.png')
+            self.rect.x = int(image[0])
+            self.rect.y = int(image[1])
+            self.shift[0] = int(shift[0])
+            self.shift[1] = int(shift[1])
+            self.health=1
+
+
+def check_edges(self):
         if self.rect.top <= 0 or self.rect.bottom >= height:
             self.dead=True
         if self.rect.left <= 0 or self.rect.right >= width:
             self.dead=True
 class Tank(BreakingObject):
-    def __init__(self,image):
-        super().__init__(image)
-        self.rect.x=width/2
-        self.rect.y=height/2
-        self.atack=0
-        self.vector=[0,-1]
-        self.health=5
-        self.atackspeed=0.015
-        self.strenght = 1
-        self.armor = 0
+    def __str__(self):
+        return self.Image+'|'+str(self.rect.x)+'|'+str(self.rect.y)+'|'+str(self.health)+'|'+str(self.vector[0])+str(self.vector[1])
+
+    def __init__(self,rect,health='-1',Image=-1):
+        if (len(rect) != 2):
+            super().__init__(rect)
+            self.rect.x = width / 2
+            self.rect.y = height / 2
+            self.atack = 0
+            self.vector = [0, -1]
+            self.health = 5
+            self.atackspeed = 0.015
+            self.strenght = 1
+            self.armor = 0
+        else:
+            super().__init__(Image)
+            self.atack=0
+            self.vector=[0,-1]
+            self.atackspeed=0.015
+            self.strenght = 1
+            self.armor = 0
+            self.rect.x = int(rect[0])
+            self.rect.y = int(rect[1])
+            self.health = int(health)
+            self.vector[0] = int(vector[0])
+            self.vector[1] = int(vector[1])
+
     def Shoot(self):
         if (self.atack<=0):
             self.atack=1
@@ -187,9 +218,11 @@ class Tank(BreakingObject):
         else:
             return False
 class Player(Tank):
-    def __init__(self,image,type=1):
-        super().__init__(image)
-        self.type = type
+    def __init__(self,image,type=1,t1=1,t2=1):
+        if (type!=1):
+            super().__init__(image,type,t1,t2)
+        else:
+            super().__init__(image)
     def CollideDo(self,ob,n):
         if (n==1):
             collides=self.shift
@@ -207,75 +240,46 @@ class Player(Tank):
             self.death()
     def process_event(self, event):
         if event.type == pygame.KEYDOWN and not self.dead:
-            if (self.type==1):
-                if event.key == pygame.K_w:
-                    self.shift[1] = -1
-                    self.shift[0] = 0
-                    self.updateImage('tankUP.png')
-                    self.vector[1] = -1
-                    self.vector[0] = 0
-                elif event.key == pygame.K_s:
-                    self.shift[1] = 1
-                    self.shift[0] = 0
-                    self.updateImage('tankDO.png')
-                    self.vector[1] = 1
-                    self.vector[0] = 0
-                if event.key == pygame.K_d:
-                    self.shift[0] = 1
-                    self.shift[1] = 0
-                    self.updateImage('tankRI.png')
-                    self.vector[0] = 1
-                    self.vector[1] = 0
-                elif event.key == pygame.K_a:
-                    self.shift[0] = -1
-                    self.shift[1] = 0
-                    self.updateImage('tankLE.png')
-                    self.vector[0] = -1
-                    self.vector[1] = 0
-                if event.key == pygame.K_SPACE:
-                    return self.Shoot()
-            else:
-                if event.key == pygame.K_UP:
-                    self.shift[1] = -1
-                    self.shift[0] = 0
-                    self.updateImage('tankUP.png')
-                    self.vector[1] = -1
-                    self.vector[0] = 0
-                elif event.key == pygame.K_DOWN:
-                    self.shift[1] = 1
-                    self.shift[0] = 0
-                    self.updateImage('tankDO.png')
-                    self.vector[1] = 1
-                    self.vector[0] = 0
-                if event.key == pygame.K_RIGHT:
-                    self.shift[0] = 1
-                    self.shift[1] = 0
-                    self.updateImage('tankRI.png')
-                    self.vector[0] = 1
-                    self.vector[1] = 0
-                elif event.key == pygame.K_LEFT:
-                    self.shift[0] = -1
-                    self.shift[1] = 0
-                    self.updateImage('tankLE.png')
-                    self.vector[0] = -1
-                    self.vector[1] = 0
-                if event.key == pygame.K_l:
-                    return self.Shoot()
+            if event.key == pygame.K_y:
+                print(str(self))
+            if event.key == pygame.K_w:
+                self.shift[1] = -1
+                self.shift[0] = 0
+                self.Image='tankUP.png'
+                self.updateImage('tankUP.png')
+                self.vector[1] = -1
+                self.vector[0] = 0
+            elif event.key == pygame.K_s:
+                self.shift[1] = 1
+                self.shift[0] = 0
+                self.updateImage('tankDO.png')
+                self.Image='tankDO.png'
+                self.vector[1] = 1
+                self.vector[0] = 0
+            if event.key == pygame.K_d:
+                self.shift[0] = 1
+                self.shift[1] = 0
+                self.updateImage('tankRI.png')
+                self.Image='tankRI.png'
+                self.vector[0] = 1
+                self.vector[1] = 0
+            elif event.key == pygame.K_a:
+                self.shift[0] = -1
+                self.shift[1] = 0
+                self.updateImage('tankLE.png')
+                self.Image='tankLE.png'
+                self.vector[0] = -1
+                self.vector[1] = 0
+            if event.key == pygame.K_SPACE:
+                return self.Shoot()
+
         elif event.type == pygame.KEYUP:
-            if (self.type==1):
-                if not (pygame.key.get_pressed()[pygame.K_w] and pygame.key.get_pressed()[pygame.K_s]) and (
-                        event.key == pygame.K_w or event.key == pygame.K_s):
-                    self.shift[1] = 0
-                if not (pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]) and (
-                        event.key == pygame.K_a or event.key == pygame.K_d):
-                    self.shift[0] = 0
-            else:
-                if not (pygame.key.get_pressed()[pygame.K_UP] and pygame.key.get_pressed()[pygame.K_DOWN]) and (
-                        event.key == pygame.K_UP or event.key == pygame.K_DOWN):
-                    self.shift[1] = 0
-                if not (pygame.key.get_pressed()[pygame.K_LEFT] and pygame.key.get_pressed()[pygame.K_RIGHT]) and (
-                        event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT):
-                    self.shift[0] = 0
+            if not (pygame.key.get_pressed()[pygame.K_w] and pygame.key.get_pressed()[pygame.K_s]) and (
+                    event.key == pygame.K_w or event.key == pygame.K_s):
+                self.shift[1] = 0
+            if not (pygame.key.get_pressed()[pygame.K_a] and pygame.key.get_pressed()[pygame.K_d]) and (
+                    event.key == pygame.K_a or event.key == pygame.K_d):
+                self.shift[0] = 0
         return False
 class TextObject():
     def __init__(self, text, size, x=0, y=0, color=(255, 255, 255)):
@@ -307,11 +311,17 @@ while(not over):
     screen = pygame.display.set_mode(size, pygame.RESIZABLE)  # pygame.RESIZABLE - позволяет окну изменять размер
 
     gameover = False
-    player1=Player('tankUP.png')
-    player2=Player('tankUP.png',2)
+    s='''tankDO.png|406|110|5
+tankDO.png|683|254|-1
+Bullet|698|335|0|2'''
+    s=s.split('\n')
+    s=[i.split('|') for i in s]
+    print(s)
+    player1=Player([s[0][1],s[0][2]],s[0][3],s[0][0])
+    player2=Player([s[1][1],s[1][2]],s[1][3],s[1][0])
+    bullets=[Bullet([s[2][1],s[2][2]],[s[2][3],s[2][4]])]
     text1=TextObject('You health:'+str(player1.health),20)
     text2=TextObject('You health:'+str(player2.health),20,0,60)
-    bullets=[]
     walls=[]
     breakingWals=[]
     menu = SpriteObject('menu.png')
@@ -374,14 +384,20 @@ while(not over):
                 bullets+=[t1]
 
         for i in range(len(bullets)):
-            if (i<len(bullets)):
-                if (bullets[i].dead!=True):
+            try:
+                print(1)
+                print(bullets[i])
 
-                    bullets[i].death()
-                    bullets[i].move()
-                    bullets[i].draw(screen)
-                else:
-                    del bullets[i]
+                if (i<len(bullets)):
+                    if (bullets[i].dead!=True):
+
+                        bullets[i].death()
+                        bullets[i].move()
+                        bullets[i].draw(screen)
+                    else:
+                        del bullets[i]
+            except:
+                krya=1
         for i in range(len(walls)):
             walls[i].draw(screen)
         for i in range(len(breakingWals)):
