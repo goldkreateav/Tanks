@@ -192,11 +192,11 @@ class Player(Tank):
         self.type = type
     def CollideDo(self,ob,n):
         if (n==1):
+            collides=self.shift
             if (self.shift[0] != 0):
                 collides[0] = self.shift[0] * -1
-            if (player1.shift[1] != 0):
+            if (self.shift[1] != 0):
                 collides[1] = self.shift[1] * -1
-
             self.shift = collides
 
             self.move()
@@ -310,7 +310,7 @@ while(not over):
     player1=Player('tankUP.png')
     player2=Player('tankUP.png',2)
     text1=TextObject('You health:'+str(player1.health),20)
-    text2=TextObject('You health:'+str(player1.health),20,0,60)
+    text2=TextObject('You health:'+str(player2.health),20,0,60)
     bullets=[]
     walls=[]
     breakingWals=[]
@@ -371,8 +371,8 @@ while(not over):
                 bullets+=[t]
             t1=player2.process_event(event)
             if t1:
-
                 bullets+=[t1]
+
         for i in range(len(bullets)):
             if (i<len(bullets)):
                 if (bullets[i].dead!=True):
@@ -406,9 +406,6 @@ while(not over):
                 bullets[i].Collide(breakingWals)
                 bullets[i].Collide([player1,player2])
             menu.draw(screen)
-            player2.atack-=player2.atackspeed
-            player2.move()
-            player2.draw(screen)
             text1.update_text('Player1 health:'+str(player1.health))
             text2.update_text('Player2 health:'+str(player2.health))
             text1.draw(screen)
@@ -416,6 +413,9 @@ while(not over):
             player1.move()
             player1.draw(screen)
             player1.atack-=player1.atackspeed
+            player2.move()
+            player2.draw(screen)
+            player2.atack-=player2.atackspeed
             pygame.display.flip()
             pygame.time.wait(5)
             screen.fill(black)
