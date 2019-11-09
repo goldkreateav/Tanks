@@ -1,6 +1,7 @@
 from gameObjects import Player,Wall,Bullet,BreakingWall,TextObject
 import pygame,time
 
+
 size = width, height = 800, 399  # Размеры экрана
 player1 = Player()
 player2 = Player()
@@ -21,7 +22,7 @@ def Send():
         wasd=2
     elif pygame.key.get_pressed()[pygame.K_w]:
         wasd=3
-    elif pygame.key.get_pressed()[pygame.K_d]:
+    if pygame.key.get_pressed()[pygame.K_d]:
         wasd=4
     if pygame.key.get_pressed()[pygame.K_SPACE]:
         space=1
@@ -29,17 +30,13 @@ def Send():
     f.writelines([str(wasd),'\n',str(space)])
     f.close()
 
-
 black = (0, 0, 0)
 pygame.init()
 screen = pygame.display.set_mode(size, pygame.RESIZABLE)  # pygame.RESIZABLE - позволяет окну изменять размер
 c=0
-text1 = TextObject('You health:' + str(player1.health), 20)
-text2 = TextObject('Enemy health:' + str(player2.health), 20, 0, 60)
+text2 = TextObject('You health:' + str(player2.health), 20)
+text1 = TextObject('Enemy health:' + str(player1.health), 20, 0, 60)
 over=False
-player11 = player1
-player21 = player2
-bullets1 = []
 while(not over):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -47,12 +44,25 @@ while(not over):
                 gameover = True
                 over = True
         Sucess = False
+        walls1=walls
+        player11=player1
+        player21=player2
+        bullets1=bullets
+
+        if (player2.health>0):
+            text2.update_text('You health:' + str(player2.health))
+        else:
+            text2.update_text('You health:0')
+        if (player1.health>0):
+            text1.update_text('Enemy health:' + str(player1.health))
+        else:
+            text1.update_text('Enemy health:0')
         try:
-            player1 = Player()
-            player2 = Player()
-            bullets = []
+            player11 = Player()
+            player12 = Player()
+            bullets1 = []
             tanks = []
-            breakingWals = []
+            breakingWals1 = []
             f = open('foclients.txt', 'r')
             gg=f.readlines()
             f.close()
@@ -61,24 +71,26 @@ while(not over):
                 i = i.split('|')
 
                 if (i[0][0] == 'B' and i[0][1] == 'W'):
-                    breakingWals += [i]
+                    breakingWals1 += [i]
                 elif (i[0][0] == 't'):
                     tanks += [i]
                 elif (i[0][1] == 'u'):
-                    bullets += [i]
-            breakingWals1 = breakingWals
-            breakingWals = []
-            for i in breakingWals1:
-                a = BreakingWall()
-                a.load([i[1], i[2]])
-                breakingWals += [a]
-            bullets1 = bullets
-            bullets = []
-            for i in bullets1:
-                print((Bullet('bullet.png', [1, 9], [1, 1])).load([i[1], i[2]], [i[3], i[4]]))
-                a = Bullet('bullet.png', [1, 9], [1, 1])
-                a.load([i[1], i[2]], [i[3], i[4]])
-                bullets += [a]
+                    bullets1 += [i]
+            if (len(breakingWals1)>0):
+                breakingWals=[]
+                for i in breakingWals1:
+                    a = BreakingWall()
+                    a.load([i[1], i[2]])
+                    breakingWals += [a]
+            try:
+                if (len(bullets1)>0 or not bullets[0].dead):
+                    bullets=[]
+                    for i in bullets1:
+                        a = Bullet('bullet.png', [1, 9], [1, 1])
+                        a.load([i[1], i[2]], [i[3], i[4]])
+                        bullets += [a]
+            except:
+                NuBivaaaet=True
             player1.load(tanks[0][0], [tanks[0][1], tanks[0][2]], [tanks[0][3], tanks[0][4]], tanks[0][5])
             player2.load(tanks[1][0], [tanks[1][1], tanks[1][2]], [tanks[1][3], tanks[1][4]], tanks[1][5])
             player1.death()
@@ -86,11 +98,9 @@ while(not over):
             Sucess = True
         except:
             Sucess = False
-
-            player1 = player11
-            player2 = player21
-            bullets = bullets1
         Send()
+        if (len(walls)<1):
+            print(walls)
         try:
             for i in range(len(bullets)):
                 bullets[i].draw(screen)
@@ -111,6 +121,8 @@ while(not over):
             player2.draw(screen)
         except:
             sss=1
+        text1.draw(screen)
+        text2.draw(screen)
         pygame.display.flip()
-        pygame.time.wait(5)
+        pygame.time.wait(50)
         screen.fill(black)
