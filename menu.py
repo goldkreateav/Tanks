@@ -6,7 +6,7 @@ black = (0, 0, 0)
 pygame.init()
 screen = pygame.display.set_mode(size, pygame.RESIZABLE)  # pygame.RESIZABLE - позволяет окну изменять размер
 
-solo = SpriteObject('start.png')
+solo = SpriteObject('solo.png')
 solo.rect.x = int(width/2.1)
 solo.rect.y = int(width/10)
 multi = SpriteObject('multi.png')
