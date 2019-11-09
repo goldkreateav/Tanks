@@ -1,4 +1,4 @@
-from gameObjects import SpriteObject,width,height,size
+from gameObjects import SpriteObject,width,height,size,Player
 import pygame
 
 
@@ -34,6 +34,12 @@ while not over:
             if (Multi):
                 exec('\n'.join(open('client.py','r').readlines()))
             if (Solo):
+                size = width, height = 800, 399  # Размеры экрана
+                player1 = Player()
+                player2 = Player()
+                bullets = []
+                tanks = []
+                walls = []
                 exec('\n'.join(open('solo.py','r').readlines()))
     pygame.display.flip()
     pygame.time.wait(5)
