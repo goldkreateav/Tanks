@@ -8,7 +8,7 @@ class Map():
             for j in range(int(width / 32)):
                 if not (i == 0 or j == 0 or i == int(height / 32)-1 or j == int(width / 32)-1):
                     if (j % 2 == 1):
-                        map[i][j]=1
+                        map[i][j]=0
         self.map=map
 import pygame,time
 gameover = False

@@ -1,6 +1,6 @@
 import sys, pygame
 
-size = width, height = 800, 399  # Размеры экрана
+size = width, height = 800, 416  # Размеры экрана
 class SpriteObject():
     def __init__(self,image=''):
         self.image_filename='images/'+image
@@ -177,18 +177,28 @@ class Bullet(BreakingObject):
             s=[0,0]
             if (shift[0] < 0):
                 s[0] = -1
-            else:
+            elif(shift[0] > 0):
                 s[0] = 1
             if (shift[1] < 0):
                 s[1] = -1
-            else:
+            elif (shift[1] > 0):
                 s[1] = 1
-            self.rect.x += shift[0] * 15 + s[0]*15
+            if (s[0]==1):
+                self.rect.x += 32
+                self.rect.y += 10
+            elif (s[1]==1):
+                self.rect.y += 32
+                self.rect.x += 10
+            elif (s[0]==-1):
+                self.rect.x -= 18
+                self.rect.y += 10
 
-            self.rect.y += shift[1] * 15 + s[1]*15
+            elif (s[1]==-1):
+                self.rect.y -= 18
+                self.rect.x += 10
 
 
-def check_edges(self):
+    def check_edges(self):
         if self.rect.top <= 0 or self.rect.bottom >= height:
             self.dead=True
         if self.rect.left <= 0 or self.rect.right >= width:
@@ -310,176 +320,176 @@ class TextObject():
 
     def draw(self, screen):
         screen.blit(self.surface, self.position)
-over=False
-def save():
-    f = open('save.txt', 'w+')
-    for i in walls + breakingWals + [player1] + [player2] + bullets:
-        f.writelines(str(i) + '\n')
-    f.close()
-while(not over):
-
-    black=(0,0,0)
-    pygame.init()
-    screen = pygame.display.set_mode(size, pygame.RESIZABLE)  # pygame.RESIZABLE - позволяет окну изменять размер
-
-    gameover = False
-    player1 = Player()
-    player2 = Player()
-    bullets=[]
-    text1=TextObject('You health:'+str(player1.health),20)
-    text2=TextObject('You health:'+str(player2.health),20,0,60)
-
-    tanks=[]
-    walls=[]
-    breakingWals=[]
-    try:
-        f=open('save.txt','r')
-        for i in f.readlines():
-            i=i.replace('\n','')
-            i=i.split('|')
-
-
-            if (i[0][0]=='W'):
-                walls+=[i]
-            elif (i[0][0]=='B' and i[0][1]=='W'):
-                breakingWals+=[i]
-            elif (i[0][0]=='t'):
-                tanks+=[i]
-            elif (i[0][1]=='u'):
-                bullets+=[i]
-        breakingWals1=breakingWals
-        breakingWals=[]
-        for i in breakingWals1:
-            a=BreakingWall()
-            a.load([i[1], i[2]])
-            breakingWals+=[a]
-
-        walls1=walls
-        walls=[]
-        for i in walls1:
-            a=Wall()
-            a.load([i[1], i[2]])
-            walls+=[a]
-        bullets1=bullets
-        bullets=[]
-        for i in bullets1:
-            print((Bullet('bullet.png',[1,9],[1,1])).load([i[1],i[2]],[i[3],i[4]]))
-            a=Bullet('bullet.png', [1, 9], [1, 1])
-            a.load([i[1], i[2]], [i[3], i[4]])
-            bullets+=[a]
-        player1.load(tanks[0][0],[tanks[0][1],tanks[0][2]],[tanks[0][3],tanks[0][4]],tanks[0][5])
-        player2.load(tanks[1][0],[tanks[1][1],tanks[1][2]],[tanks[1][3],tanks[1][4]],tanks[1][5])
-        player1.death()
-        player2.death()
-
-    except:
-
-        for i in range(int(height / 19)):
-            for j in range(int(width / 32)):
-                if (i == 0 or j == 0 or i == 20 or j == 24):
-                    walls += [Wall(j * 32, i * 19)]
-        collides = [0, 0]
-        for i in range(int(height / 19)):
-            for j in range(int(width / 32)):
-                if (j % 4 == 3 and j < 20 and (i > 2 or i < 16)):
-                    breakingWals += [BreakingWall(j * 32, i * 19)]
-
-    menu = SpriteObject('menu.png')
-    menu.rect.x = 3
-    menu.rect.y = 40
-    while not over and not gameover:
-        for event in pygame.event.get():
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if (menu.clicked()):
-                    Start = SpriteObject('start.png')
-                    Start.rect.x = int(width/2.1)
-                    Start.rect.y = int(width/10)
-                    Stats = SpriteObject('stats.png')
-                    Stats.rect.x = int(width/2.1)
-                    Stats.rect.y = int(width/4.43)
-                    start = False
-                    exit = SpriteObject('exit.png')
-                    exit.rect.x = int(width/2.1)
-                    exit.rect.y = int(width/2.85)
-                    start = False
-                    stats = False
-                    while not start:
-                        start = over
-                        Start.draw(screen)
-                        exit.draw(screen)
-                        Stats.draw(screen)
-                        for event in pygame.event.get():
-                            if event.type == pygame.QUIT:
-                                print('This is the end of the game')
-                                gameover = True
-                            if event.type == pygame.MOUSEBUTTONDOWN:
-                                start = Start.clicked()
-                                over = exit.clicked()
-                                stats = Stats.clicked()
-                                if (stats):
-                                    save()
-                        pygame.display.flip()
-                        pygame.time.wait(5)
-                        screen.fill((255, 255, 255))
-
-            if event.type == pygame.QUIT:
-                print('This is the end of the game')
-                gameover = True
-                over = True
-            t=player1.process_event(event)
-            if t:
-                bullets+=[t]
-            t1=player2.process_event(event)
-            if t1:
-                bullets+=[t1]
-
-        for i in range(len(bullets)):
-            try:
-                if (i<len(bullets)):
-                    if (bullets[i].dead!=True):
-
-                        bullets[i].death()
-                        bullets[i].move()
-                        bullets[i].draw(screen)
-                    else:
-                        del bullets[i]
-            except:
-                krya=1
-        for i in range(len(walls)):
-            walls[i].draw(screen)
-        for i in range(len(breakingWals)):
-
-            if (i<len(breakingWals)):
-                if (breakingWals[i].dead!=True):
-
-                    breakingWals[i].death()
-                    breakingWals[i].draw(screen)
-                else:
-                    del breakingWals[i]
-
-        if ( not over and not gameover):
-            player1.Collide(walls+breakingWals,1)
-            player1.Collide(bullets,2)
-            player2.Collide(walls+breakingWals,1)
-            player2.Collide(bullets,2)
-            for i in range(len(breakingWals)):
-                breakingWals[i].Collide(bullets)
-            for i in range(len(bullets)):
-                bullets[i].Collide(walls)
-                bullets[i].Collide(breakingWals)
-                bullets[i].Collide([player1,player2])
-            menu.draw(screen)
-            text1.update_text('Player1 health:'+str(player1.health))
-            text2.update_text('Player2 health:'+str(player2.health))
-            text1.draw(screen)
-            text2.draw(screen)
-            player1.move()
-            player1.draw(screen)
-            player1.atack-=player1.atackspeed
-            player2.move()
-            player2.draw(screen)
-            player2.atack-=player2.atackspeed
-            pygame.display.flip()
-            pygame.time.wait(5)
-            screen.fill(black)
+# over=False
+# def save():
+#     f = open('save.txt', 'w+')
+#     for i in walls + breakingWals + [player1] + [player2] + bullets:
+#         f.writelines(str(i) + '\n')
+#     f.close()
+# while(not over):
+#
+#     black=(0,0,0)
+#     pygame.init()
+#     screen = pygame.display.set_mode(size, pygame.RESIZABLE)  # pygame.RESIZABLE - позволяет окну изменять размер
+#
+#     gameover = False
+#     player1 = Player()
+#     player2 = Player()
+#     bullets=[]
+#     text1=TextObject('You health:'+str(player1.health),20)
+#     text2=TextObject('You health:'+str(player2.health),20,0,60)
+#
+#     tanks=[]
+#     walls=[]
+#     breakingWals=[]
+#     try:
+#         f=open('save.txt','r')
+#         for i in f.readlines():
+#             i=i.replace('\n','')
+#             i=i.split('|')
+#
+#
+#             if (i[0][0]=='W'):
+#                 walls+=[i]
+#             elif (i[0][0]=='B' and i[0][1]=='W'):
+#                 breakingWals+=[i]
+#             elif (i[0][0]=='t'):
+#                 tanks+=[i]
+#             elif (i[0][1]=='u'):
+#                 bullets+=[i]
+#         breakingWals1=breakingWals
+#         breakingWals=[]
+#         for i in breakingWals1:
+#             a=BreakingWall()
+#             a.load([i[1], i[2]])
+#             breakingWals+=[a]
+#
+        # walls1=walls
+        # walls=[]
+        # for i in walls1:
+        #     a=Wall()
+        #     a.load([i[1], i[2]])
+        #     walls+=[a]
+#         bullets1=bullets
+#         bullets=[]
+#         for i in bullets1:
+#             print((Bullet('bullet.png',[1,9],[1,1])).load([i[1],i[2]],[i[3],i[4]]))
+#             a=Bullet('bullet.png', [1, 9], [1, 1])
+#             a.load([i[1], i[2]], [i[3], i[4]])
+#             bullets+=[a]
+#         player1.load(tanks[0][0],[tanks[0][1],tanks[0][2]],[tanks[0][3],tanks[0][4]],tanks[0][5])
+#         player2.load(tanks[1][0],[tanks[1][1],tanks[1][2]],[tanks[1][3],tanks[1][4]],tanks[1][5])
+#         player1.death()
+#         player2.death()
+#
+#     except:
+#
+#         for i in range(int(height / 19)):
+#             for j in range(int(width / 32)):
+#                 if (i == 0 or j == 0 or i == 20 or j == 24):
+#                     walls += [Wall(j * 32, i * 19)]
+#         collides = [0, 0]
+#         for i in range(int(height / 19)):
+#             for j in range(int(width / 32)):
+#                 if (j % 4 == 3 and j < 20 and (i > 2 or i < 16)):
+#                     breakingWals += [BreakingWall(j * 32, i * 19)]
+#
+#     menu = SpriteObject('menu.png')
+#     menu.rect.x = 3
+#     menu.rect.y = 40
+#     while not over and not gameover:
+#         for event in pygame.event.get():
+#
+#             if event.type == pygame.MOUSEBUTTONDOWN:
+#                 if (menu.clicked()):
+#                     Start = SpriteObject('start.png')
+#                     Start.rect.x = int(width/2.1)
+#                     Start.rect.y = int(width/10)
+#                     Stats = SpriteObject('stats.png')
+#                     Stats.rect.x = int(width/2.1)
+#                     Stats.rect.y = int(width/4.43)
+#                     start = False
+#                     exit = SpriteObject('exit.png')
+#                     exit.rect.x = int(width/2.1)
+#                     exit.rect.y = int(width/2.85)
+#                     start = False
+#                     stats = False
+#                     while not start:
+#                         start = over
+#                         Start.draw(screen)
+#                         exit.draw(screen)
+#                         Stats.draw(screen)
+#                         for event in pygame.event.get():
+#                             if event.type == pygame.QUIT:
+#                                 print('This is the end of the game')
+#                                 gameover = True
+#                             if event.type == pygame.MOUSEBUTTONDOWN:
+#                                 start = Start.clicked()
+#                                 over = exit.clicked()
+#                                 stats = Stats.clicked()
+#                                 if (stats):
+#                                     save()
+#                         pygame.display.flip()
+#                         pygame.time.wait(5)
+#                         screen.fill((255, 255, 255))
+#
+#             if event.type == pygame.QUIT:
+#                 print('This is the end of the game')
+#                 gameover = True
+#                 over = True
+#             t=player1.process_event(event)
+#             if t:
+#                 bullets+=[t]
+#             t1=player2.process_event(event)
+#             if t1:
+#                 bullets+=[t1]
+#
+#         for i in range(len(bullets)):
+#             try:
+#                 if (i<len(bullets)):
+#                     if (bullets[i].dead!=True):
+#
+#                         bullets[i].death()
+#                         bullets[i].move()
+#                         bullets[i].draw(screen)
+#                     else:
+#                         del bullets[i]
+#             except:
+#                 krya=1
+#         for i in range(len(walls)):
+#             walls[i].draw(screen)
+#         for i in range(len(breakingWals)):
+#
+#             if (i<len(breakingWals)):
+#                 if (breakingWals[i].dead!=True):
+#
+#                     breakingWals[i].death()
+#                     breakingWals[i].draw(screen)
+#                 else:
+#                     del breakingWals[i]
+#
+#         if ( not over and not gameover):
+#             player1.Collide(walls+breakingWals,1)
+#             player1.Collide(bullets,2)
+#             player2.Collide(walls+breakingWals,1)
+#             player2.Collide(bullets,2)
+#             for i in range(len(breakingWals)):
+#                 breakingWals[i].Collide(bullets)
+#             for i in range(len(bullets)):
+#                 bullets[i].Collide(walls)
+#                 bullets[i].Collide(breakingWals)
+#                 bullets[i].Collide([player1,player2])
+#             menu.draw(screen)
+#             text1.update_text('Player1 health:'+str(player1.health))
+#             text2.update_text('Player2 health:'+str(player2.health))
+#             text1.draw(screen)
+#             text2.draw(screen)
+#             player1.move()
+#             player1.draw(screen)
+#             player1.atack-=player1.atackspeed
+#             player2.move()
+#             player2.draw(screen)
+#             player2.atack-=player2.atackspeed
+#             pygame.display.flip()
+#             pygame.time.wait(5)
+#             screen.fill(black)
