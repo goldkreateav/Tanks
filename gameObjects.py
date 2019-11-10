@@ -60,6 +60,7 @@ class BreakingObject(DinamicObject):
         if (self.health<=0):
             self.dead=True
             return True
+        self.dead=False
         return False
 
     def draw(self,screen):
@@ -345,6 +346,7 @@ while(not over):
                     exit.rect.y = int(width/2.85)
                     start = False
                     stats = False
+
                     while not start:
                         start = over
                         Start.draw(screen)
@@ -358,6 +360,78 @@ while(not over):
                                 start = Start.clicked()
                                 over = exit.clicked()
                                 stats = Stats.clicked()
+                                if (stats):
+                                    back = False
+                                    Back = SpriteObject('back.png')
+                                    Back.rect.x = int(width / 2.1)
+                                    Back.rect.y = int(height / 1.1)
+                                    plus1 = SpriteObject('+.png')
+                                    minus1 = SpriteObject('-.png')
+                                    plus2 = SpriteObject('+.png')
+                                    minus2 = SpriteObject('-.png')
+                                    plus3 = SpriteObject('+.png')
+                                    minus3 = SpriteObject('-.png')
+                                    plus1.rect.x = int(width / (1.5))
+                                    plus1.rect.y = int(height / 8)
+                                    minus1.rect.x = int(width / (1.58))
+                                    minus1.rect.y = int(height / 8)
+                                    plus2.rect.x = int(width / (1.5))
+                                    plus2.rect.y = int(height / 5)
+                                    minus2.rect.x = int(width / (1.58))
+                                    minus2.rect.y = int(height / 5)
+                                    plus3.rect.x = int(width / (1.5))
+                                    plus3.rect.y = int(height / 3)
+                                    minus3.rect.x = int(width / (1.58))
+                                    minus3.rect.y = int(height / 3)
+                                    health = TextObject('You health:' + str(player1.health), 20, int(width / 2.3),
+                                                        int(height / 10), (0, 0, 0))
+                                    strenght = TextObject('You strenght:' + str(player1.strenght), 20, int(width / 2.3),
+                                                          int(height / 6), (0, 0, 0))
+                                    atackspeed = TextObject('You atackspeed:' + str(player1.atackspeed), 20,
+                                                            int(width / 3.6), int(height / 3.15),
+                                                            (0, 0, 0))
+                                    while (not back):
+                                        Back.draw(screen)
+                                        plus1.draw(screen)
+                                        minus1.draw(screen)
+                                        plus2.draw(screen)
+                                        minus2.draw(screen)
+                                        plus3.draw(screen)
+                                        minus3.draw(screen)
+                                        health.update_text('You health:' + str(player1.health))
+                                        health.draw(screen)
+                                        strenght.update_text('You strenght:' + str(player1.strenght))
+                                        atackspeed.update_text('You atackspeed:' + str(player1.atackspeed * 100))
+                                        strenght.draw(screen)
+                                        atackspeed.draw(screen)
+                                        for event in pygame.event.get():
+                                            if event.type == pygame.QUIT:
+                                                print('This is the end of the game')
+                                                back = True
+                                            if event.type == pygame.MOUSEBUTTONDOWN:
+                                                back = Back.clicked()
+                                                if (plus1.clicked()):
+                                                    player1.health += 1
+                                                    player2.health += 1
+                                                if (minus1.clicked()):
+                                                    player1.health -= 1
+                                                    player2.health -= 1
+                                                if (plus2.clicked()):
+                                                    player1.strenght += 1
+                                                    player2.strenght += 1
+                                                if (minus2.clicked()):
+                                                    player1.strenght -= 1
+                                                    player2.strenght -= 1
+                                                if (plus3.clicked()):
+                                                    player1.atackspeed += 0.001
+                                                    player2.atackspeed += 0.001
+                                                if (minus3.clicked()):
+                                                    player1.atackspeed -= 0.001
+                                                    player2.atackspeed -= 0.001
+
+                                        pygame.display.flip()
+                                        pygame.time.wait(5)
+                                        screen.fill((255, 255, 255))
                         pygame.display.flip()
                         pygame.time.wait(5)
                         screen.fill((255, 255, 255))
