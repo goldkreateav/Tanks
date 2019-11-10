@@ -3,7 +3,7 @@ import pygame,time
 import socket
 import random
 import threading
-size = width, height = 800, 399
+size = width, height = 800, 416
 player1 = Player()
 player2 = Player()
 bullets = []
@@ -57,9 +57,9 @@ while(Currentid<3):
 keys=[0,0]
 keys1=[0,0]
 gameover = False
-for i in range(int(height/19)):
-        for j in range(int(width/32)):
-            if (i==0 or j==0 or i==20 or j==24 ):
+for i in range(int(height / 32)):
+    for j in range(int(width / 32)):
+        if (i == 0 or j == 0 or i == int(height / 32) or j == int(width / 32)):
                 walls+=[Wall(j*32,i*32)]
 for i in range(int(height / 32)):
     for j in range(int(width / 32)):
