@@ -1,9 +1,14 @@
 from gameObjects import Player,Wall,Bullet,BreakingWall,TextObject
 import pygame,time
 from socket import socket, AF_INET, SOCK_STREAM
+global ERROR
+ERROR=False
 class Client:
     def __init__(self):
-        self.host = "185.181.8.21"
+        try:
+            self.host=ip
+        except:
+            self.host = "127.0.0.1"
         self.port = 7557
         self.tcp_client = socket(AF_INET, SOCK_STREAM)
         self.tcp_client.connect((self.host, self.port))
@@ -65,10 +70,12 @@ while(not over):
         if (player2.health>0):
             text2.update_text('You health:' + str(player1.health))
         else:
+            over=True
             text2.update_text('You health:0')
         if (player1.health>0):
             text1.update_text('Enemy health:' + str(player2.health))
         else:
+            over=True
             text1.update_text('Enemy health:0')
         try:
             player11 = Player()

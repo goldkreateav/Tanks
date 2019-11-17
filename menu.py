@@ -1,4 +1,4 @@
-from gameObjects import SpriteObject,width,height,size,Player
+from gameObjects import SpriteObject,width,height,size,Player,InputBox
 import pygame
 
 
@@ -19,6 +19,7 @@ exit.rect.y = int(width/2.85)
 Solo = False
 stats = False
 over=False
+
 while not over:
     solo.draw(screen)
     exit.draw(screen)
@@ -32,7 +33,33 @@ while not over:
             over = exit.clicked()
             Multi = multi.clicked()
             if (Multi):
-                exec('\n'.join(open('client.py','r').readlines()))
+                IP = InputBox(int(width/2.1),int(height/3),200,40)
+
+                Start = SpriteObject('start.png')
+                Start.rect.x = int(width / 2.1)
+                Start.rect.y = int(width / 2.2)
+                s=False
+                while( not s):
+                    Start.draw(screen)
+                    IP.draw(screen)
+
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            print('This is the end of the game')
+                            gameover = True
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            s = Start.clicked()
+                        IP.handle_event(event)
+
+                    pygame.display.flip()
+                    pygame.time.wait(5)
+                    screen.fill((255, 255, 255))
+                ip=IP.text
+                try:
+                    exec('\n'.join(open('client.py','r').readlines()))
+                except:
+                    s=False
+                    IP.text='This game cant to start'
             if (Solo):
                 size = width, height = 800, 399  # Размеры экрана
                 player1 = Player()

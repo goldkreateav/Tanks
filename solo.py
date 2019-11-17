@@ -1,15 +1,6 @@
 
 from gameObjects import Player,Wall,Bullet,BreakingWall,TextObject,SpriteObject,size,width,height
-class Map():
-
-    def __init__(self):
-        map=[[0]*int(width / 32)]*int(height / 32)
-        for i in range(int(height / 32)):
-            for j in range(int(width / 32)):
-                if not (i == 0 or j == 0 or i == int(height / 32)-1 or j == int(width / 32)-1):
-                    if (j % 2 == 1):
-                        map[i][j]=0
-        self.map=map
+import random
 import pygame,time
 gameover = False
 over=False
@@ -31,20 +22,31 @@ for i in range(int(height / 32)):
         if (i == 0 or j == 0 or i == int(height / 32)-1 or j == int(width / 32)-1):
             walls += [Wall(j * 32, i * 32)]
 collides = [0, 0]
-Nmap=Map()
-for i in range(int(height / 32)):
-    for j in range(int(width / 32)):
-        if (Nmap.map[i][j]==1):
-            breakingWals += [BreakingWall(j * 32, i * 32)]
-# int maze[height][width]; //создаем матрицу - двумерный массив
-# for(i = 0; i < height; i++){
-#         for(j = 0; j < width; j++){
-#             if((i % 2 != 0  && j % 2 != 0) && //если ячейка нечетная по x и y,
-#                (i < height-1 && j < width-1))   //и при этом находится в пределах стен лабиринта
-#                    maze[i][j] = CELL;       //то это КЛЕТКА
-#             else maze[i][j] = WALL;           //в остальных случаях это СТЕНА.
-#         }
-#     }
+pol=(height // 32 + int((height % 32)>=22))//2+(height // 32 + int((height % 32)>=22))%2
+pol1=0
+
+list = [] * 2
+list2 = [] * 2
+for i in range(2):
+    list += [random.randrange(1, width // 32, 2)]
+    list2 += [random.randrange(1, height // 32, 2)]
+
+for stage in range(height // 32):
+    if (stage != list2[0] and stage != list2[1]):
+        wls=(stage%2)
+    if stage>pol:
+        pol1+=1
+    for i in range(width // 32) :
+        if(i!=list[0] and i!=list[1]):
+            if wls==0:
+                if(i>=stage-pol1*2 and (i < (width // 32 ) - stage + pol1*2) and stage !=pol):
+                    breakingWals += [BreakingWall(i * 32, (stage) * 32)]
+                    breakingWals += [BreakingWall (0 , stage * 32)]
+                    breakingWals += [BreakingWall(width - 32, stage * 32)]
+                if i==2 and stage>=3 and stage<=height//32-3 or i==width//32-3 and stage>=3 and stage<=height//32-3:
+                    breakingWals += [BreakingWall(i * 32, (stage) * 32)]
+                if i==4 and stage>=5 and stage<=height//32-5 or i==width//32-5 and stage>=5 and stage<=height//32-5:
+                    breakingWals += [BreakingWall(i * 32, (stage) * 32)]
 
 while not over and not gameover:
     for event in pygame.event.get():
