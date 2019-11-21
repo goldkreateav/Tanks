@@ -98,6 +98,7 @@ while not over and not gameover:
             bullets[i].Collide(walls)
             bullets[i].Collide(breakingWals)
             bullets[i].Collide([player1, player2])
+            bullets[i].health-=0.008
         menu.draw(screen)
         text1.update_text('Player1 health:' + str(player1.health))
         text2.update_text('Player2 health:' + str(player2.health))

@@ -100,6 +100,7 @@ while(player1.health>0 and player2.health>0):
             bullets[i].Collide(walls)
             bullets[i].Collide(breakingWals)
             bullets[i].Collide([player1, player2])
+            bullets[i].health-=0.008
         if (True or Recieve1):
             try:
                 if (keys[0]==1):

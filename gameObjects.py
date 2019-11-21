@@ -320,6 +320,47 @@ class TextObject():
 
     def draw(self, screen):
         screen.blit(self.surface, self.position)
+class InputBox:
+
+    def __init__(self, x, y, x1, y1, text=''):
+        self.FONT = pygame.font.SysFont('Comic Sans MS', 15, True)  # Шрифт Comic Sans MS, размер 15, полужирный
+        self.rect = pygame.Rect(x, y, x1, y1)
+        self.color = (0,0,0)
+        self.text = text
+        self.txt_surface =  self.FONT.render(text, True, self.color)
+        self.active = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # If the user clicked on the input_box rect.
+            if self.rect.collidepoint(event.pos):
+                # Toggle the active variable.
+                self.active = not self.active
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    print(self.text)
+                    self.text = ''
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    if (len(self.text)<20):
+                        self.text += event.unicode
+                # Re-render the text.
+                self.txt_surface =  self.FONT.render(self.text, True, self.color)
+
+    def update(self):
+        # Resize the box if the text is too long.
+        width = max(200, self.txt_surface.get_width()+10)
+        self.rect.w = width
+
+    def draw(self, screen):
+        # Blit the text.
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        # Blit the rect.
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+
+
 # over=False
 # def save():
 #     f = open('save.txt', 'w+')
